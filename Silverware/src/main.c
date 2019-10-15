@@ -50,10 +50,15 @@ THE SOFTWARE.
 #include "drv_fmc2.h"
 #include "gestures.h"
 #include "binary.h"
-
+#include "osd.h"
+#include "drv_dshot.h"
+#include "drv_osd.h"
 #include <stdio.h>
 #include <math.h>
 #include <inttypes.h>
+#include "rx_sbus_dsmx_bayang_switch.h"
+#include "IIR_filter.h"
+
 
 #ifdef USE_SERIAL_4WAY_BLHELI_INTERFACE
 #include "drv_softserial.h"
@@ -72,16 +77,15 @@ THE SOFTWARE.
 debug_type debug;
 #endif
 
-
-
-
-
 // hal
+void (*pFun)(void);
 void clk_init(void);
 void imu_init(void);
 extern void flash_load( void);
+extern void flash_save( void);
 extern void flash_hard_coded_pid_identifier(void);
-
+extern int sbus_dsmx_flag;
+unsigned char OSD_DATA[15] = {0x00};
 
 // looptime in seconds
 float looptime;
@@ -135,6 +139,9 @@ int flash_feature_3 = 0;
 int ledcommand = 0;
 int ledblink = 0;
 unsigned long ledcommandtime = 0;
+unsigned int osdcount = 0;
+unsigned char rx_switch = 0;
+
 
 void failloop( int val);
 #ifdef USE_SERIAL_4WAY_BLHELI_INTERFACE
@@ -147,19 +154,49 @@ int main(void)
 {
 	
 	delay(1000);
-
+    rx_switch = RX_Default;
 
 #ifdef ENABLE_OVERCLOCK
 clk_init();
 #endif
-	
+
+#if defined(RX_SBUS_DSMX_BAYANG_SWITCH) 
+	switch_key();
+    flash_load();
+    if(KEY == 0)
+    {	
+		lite_2S_rx_spektrum_bind();	
+		rx_switch = 1;     
+		while(KEY == 0); 
+		unsigned long time=0;
+		while(time < 4000000)       
+		{
+            if(KEY == 0)
+            {
+                rx_switch++;
+                while(KEY == 0);
+            }
+            if(rx_switch >= 3)
+            {
+                rx_switch = 3;
+            }
+            time++;
+		}
+		flash_save();
+    }
+#endif 
+    
+    
   gpio_init();	
-  ledon(255);									//Turn on LED during boot so that if a delay is used as part of using programming pins for other functions, the FC does not appear inactive while programming times out
-	spi_init();
+  ledon(255);	
+  spi_init();
 	
   time_init();
-
-
+    
+#ifdef Lite_OSD
+ // osdMenuInit();
+#endif
+    
 #if defined(RX_DSMX_2048) || defined(RX_DSM2_1024)    
 		rx_spektrum_bind(); 
 #endif
@@ -186,7 +223,7 @@ clk_init();
 	else 
 	{
         //gyro not found   
-		failloop(4);
+		//failloop(4);
 	}
 	
 	adc_init();
@@ -196,15 +233,30 @@ aux[CH_ON] = 1;
 #ifdef AUX1_START_ON
 aux[CH_AUX1] = 1;
 #endif
+  
     
-    
- #ifdef FLASH_SAVE1
-// read pid identifier for values in file pid.c
-    flash_hard_coded_pid_identifier();
-
-// load flash saved variables
-    flash_load( );
-#endif
+#ifdef RX_SBUS_DSMX_BAYANG_SWITCH
+    if(rx_switch == 1)
+    {
+        rx_init();
+        pFun = checkrx;
+    }
+    else if(rx_switch == 2)
+    {
+        sbus_rx_init();
+        pFun = sbus_checkrx;
+        sbus_dsmx_flag = 1;
+    }
+    else if(rx_switch == 3)
+    {
+        dsmx_rx_init();
+        pFun =dsmx_checkrx;
+        sbus_dsmx_flag = 0;
+    }
+#else
+	rx_init();
+    pFun = checkrx;
+#endif    
 
 
 #ifdef USE_ANALOG_AUX
@@ -252,6 +304,7 @@ if ( vbattfilt/lipo_cell_count < 3.3f) failloop(2);
 #endif
 
 
+    IIRFilter_Init();
 
 	gyro_cal();
 
@@ -424,18 +477,6 @@ if( thrfilt > 0.1f )
 
     vbatt_comp = tempvolt + (float) VDROP_FACTOR * thrfilt; 	
 
-           
-#ifdef DEBUG
-	debug.vbatt_comp = vbatt_comp ;
-#endif		
-// check gestures
-    if ( onground )
-	{
-	 gestures( );
-	}
-
-   
-
 
 if ( LED_NUMBER > 0)
 {
@@ -446,6 +487,13 @@ if ( LED_NUMBER > 0)
     {
         if ( rxmode == RXMODE_BIND)
         {// bind mode
+            for(int i=20;i>0;i--)
+            {
+              motor_dir(0,DSHOT_CMD_ROTATE_REVERSE);
+              motor_dir(1,DSHOT_CMD_ROTATE_NORMAL);
+              motor_dir(2,DSHOT_CMD_ROTATE_NORMAL);
+              motor_dir(3,DSHOT_CMD_ROTATE_REVERSE);
+            }
             ledflash ( 100000, 12);
         }else
         {// non bind
@@ -558,14 +606,20 @@ rgb_dma_start();
 #endif
 
 // receiver function
-checkrx();
+    pFun();
+    
+#ifdef Lite_OSD
+    osdcount ++;
+    if(osdcount == 200)
+    {
+        make_vol_pack(OSD_DATA,(int)(vbattfilt*100),0,0,aux,0,0,0,0,0,0,0);
+        OSD_Tx_Data(OSD_DATA,pack_len);
+        osdcount = 0;
+    }
 
-
-#ifdef DEBUG
-	debug.cpu_load = (gettime() - lastlooptime )*1e-3f;
 #endif
-
-while ( (gettime() - time) < LOOPTIME );	
+    
+    while ( (gettime() - time) < LOOPTIME );	
 
 		
 	}// end loop

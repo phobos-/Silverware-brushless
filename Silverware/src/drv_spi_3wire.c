@@ -108,9 +108,34 @@ for ( int i =7 ; i >=0 ; i--)
 		{
 			MOSILOW;
 		}
-	
-		SCKHIGH;
+        SCKHIGH;
+        delay(6);
 		SCKLOW;
+        
+		delay(6);
+		
+	}
+}
+
+void spi_sendbyte_sd ( int data)
+{
+mosi_output();
+for ( int i =7 ; i >=0 ; i--)
+	{
+		if (  (data>>i)&1  ) 
+		{
+			MOSIHIGH;
+		}
+		else 
+		{
+			MOSILOW;
+		}
+        SCKHIGH;
+        delay(7);
+		SCKLOW;
+        
+		delay(7);
+		
 	}
 }
 

@@ -64,6 +64,8 @@
 #include "util.h"
 #include "drv_dshot.h"
 
+extern float rx[];
+extern char aux[16];
 
 // IDLE_OFFSET is added to the throttle. Adjust its value so that the motors
 // still spin at minimum throttle.
@@ -438,7 +440,53 @@ void pwm_set( uint8_t number, float pwm )
 	if ( onground ) {
 		value = 0; // stop the motors
 	}
-
+    if(!aux[ARMING] && !aux[LEVELMODE] && aux[RACEMODE])
+    {
+        if((rx[Roll] > 0.3f))
+        {
+            if(number > 1)
+            {
+                value = 0 + rx[Roll]*1000  + 1000;
+            }
+            else
+            {
+                    value = 0;
+            }
+        }
+        if((rx[Roll] < -0.3f)) 
+        {
+            if(number <2 )
+            {
+                value = 0 + rx[Roll]*(-1000)  + 1000;
+            }
+            else
+            {
+                    value = 0;
+            }
+        }
+        if((rx[Pitch] > 0.3f))
+        {
+            if(number==1 || number==3)
+            {
+                value = 0 + rx[Pitch]*1000  + 1000;
+            }
+            else
+            {
+                    value = 0;
+            }							
+        }
+        if((rx[Pitch] < -0.3f))
+        {
+            if(number==0 || number==2)
+            {
+                value = 0 + rx[Pitch]*(-1000)  + 1000;
+            }
+            else
+            {
+                 value = 0;
+            }						
+        }
+    }
 	if ( failsafe ) {
 		if ( ! pwm_failsafe_time ) {
 			pwm_failsafe_time = gettime();

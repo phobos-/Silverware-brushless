@@ -37,7 +37,7 @@ unsigned char sa_flag = 0;
 unsigned char aetr_or_taer=0;
 unsigned char showcase = 0;
 extern unsigned char rx_switch;
-unsigned char motorDir[4] = {0,1,1,0};
+unsigned char motorDir[4] = {1,0,0,1};
 char down_flag = 0;
 char up_flag = 0;
 char right_flag = 0;

@@ -86,7 +86,7 @@ extern void flash_save( void);
 extern void flash_hard_coded_pid_identifier(void);
 extern int sbus_dsmx_flag;
 unsigned char OSD_DATA[15] = {0x00};
-
+unsigned int pwm_count = 0;
 // looptime in seconds
 float looptime;
 // filtered battery in volts
@@ -141,7 +141,7 @@ int ledblink = 0;
 unsigned long ledcommandtime = 0;
 unsigned int osdcount = 0;
 unsigned char rx_switch = 0;
-
+extern unsigned char motorDir[4];
 
 void failloop( int val);
 #ifdef USE_SERIAL_4WAY_BLHELI_INTERFACE
@@ -264,10 +264,6 @@ aux[CH_AUX1] = 1;
   pid_init();
 #endif
 
-
-	rx_init();
-
-	
 int count = 0;
 	
 while ( count < 5000 )
@@ -314,7 +310,6 @@ rgb_init();
 #ifdef SERIAL_ENABLE
 serial_init();
 #endif
-
 
 
 imu_init();
@@ -487,13 +482,6 @@ if ( LED_NUMBER > 0)
     {
         if ( rxmode == RXMODE_BIND)
         {// bind mode
-            for(int i=20;i>0;i--)
-            {
-              motor_dir(0,DSHOT_CMD_ROTATE_REVERSE);
-              motor_dir(1,DSHOT_CMD_ROTATE_NORMAL);
-              motor_dir(2,DSHOT_CMD_ROTATE_NORMAL);
-              motor_dir(3,DSHOT_CMD_ROTATE_REVERSE);
-            }
             ledflash ( 100000, 12);
         }else
         {// non bind
@@ -618,7 +606,49 @@ rgb_dma_start();
     }
 
 #endif
-    
+    if(!aux[ARMING])
+    {
+        pwm_count ++;
+        if(pwm_count ==30)
+         {
+            if (aux[LEVELMODE])
+            {
+                for(int i=10;i>0;i--)
+                {
+                  motor_dir(0,(motorDir[0] ? DSHOT_CMD_ROTATE_REVERSE : DSHOT_CMD_ROTATE_NORMAL));
+                  motor_dir(1,(motorDir[1] ? DSHOT_CMD_ROTATE_REVERSE : DSHOT_CMD_ROTATE_NORMAL));
+                  motor_dir(2,(motorDir[2] ? DSHOT_CMD_ROTATE_REVERSE : DSHOT_CMD_ROTATE_NORMAL));
+                  motor_dir(3,(motorDir[3] ? DSHOT_CMD_ROTATE_REVERSE : DSHOT_CMD_ROTATE_NORMAL));
+                }
+
+            }
+            else
+            {
+                if (!aux[RACEMODE])
+                {
+                    for(int i=10;i>0;i--)
+                    {
+                      motor_dir(0,(motorDir[0] ? DSHOT_CMD_ROTATE_REVERSE : DSHOT_CMD_ROTATE_NORMAL));
+                      motor_dir(1,(motorDir[1] ? DSHOT_CMD_ROTATE_REVERSE : DSHOT_CMD_ROTATE_NORMAL));
+                      motor_dir(2,(motorDir[2] ? DSHOT_CMD_ROTATE_REVERSE : DSHOT_CMD_ROTATE_NORMAL));
+                      motor_dir(3,(motorDir[3] ? DSHOT_CMD_ROTATE_REVERSE : DSHOT_CMD_ROTATE_NORMAL));
+                    }
+                }
+                else if(aux[RACEMODE])
+                {
+                    for(int i=10;i>0;i--)
+                    {
+                      motor_dir(0,(motorDir[0] ? DSHOT_CMD_ROTATE_NORMAL : DSHOT_CMD_ROTATE_REVERSE));
+                      motor_dir(1,(motorDir[1] ? DSHOT_CMD_ROTATE_NORMAL : DSHOT_CMD_ROTATE_REVERSE));
+                      motor_dir(2,(motorDir[2] ? DSHOT_CMD_ROTATE_NORMAL : DSHOT_CMD_ROTATE_REVERSE));
+                      motor_dir(3,(motorDir[3] ? DSHOT_CMD_ROTATE_NORMAL : DSHOT_CMD_ROTATE_REVERSE));
+                    }
+                }
+                        
+            }
+            pwm_count = 0;
+        }
+    }
     while ( (gettime() - time) < LOOPTIME );	
 
 		

@@ -16,7 +16,7 @@ extern void flash_save( void);
 extern void flash_hard_coded_pid_identifier(void);
 
 extern unsigned char OSD_DATA[15];
-char save_motor_dir[4] = {1,0,0,1};              //flash save motor dir
+char save_motor_dir[4] = {1,0,0,1};
 
 extern char aux[16];
 extern unsigned int osd_count;
@@ -49,8 +49,8 @@ char motor_sta = 0x00;
 
 Menu_List main_menu,main_menu_head;
 Menu_List PID_menu,PID_menu_head;
-Menu_List Motor_menu,Motor_menu_head;
-Menu_List Receiver_menu,Receiver_menu_head;
+//Menu_List Motor_menu,Motor_menu_head;
+//Menu_List Receiver_menu,Receiver_menu_head;
 Menu_List Menu_pointer;
 
 void osdMenuInit(void)
@@ -61,15 +61,16 @@ void osdMenuInit(void)
 	PID_menu = CreateDbCcLinkList(9,1);
 	PID_menu_head = PID_menu;
 	
-	Motor_menu = CreateDbCcLinkList(4,2);
-	Motor_menu_head = Motor_menu;
-	
-	Receiver_menu = CreateDbCcLinkList(1,3);
-	Receiver_menu_head = Receiver_menu;
+//	Motor_menu = CreateDbCcLinkList(4,2);
+//	Motor_menu_head = Motor_menu;
+//	
+//	Receiver_menu = CreateDbCcLinkList(1,3);
+//	Receiver_menu_head = Receiver_menu;
     
 	Menu_pointer = main_menu;    
 }
 
+#if 1
 void osd_setting()
 {
     if(!showcase)
@@ -97,21 +98,21 @@ void osd_setting()
                     PID_menu = PID_menu->next;
             }
             PID_menu = PID_menu_head;
-            int i;
-            for(i=0;i<4;i++)
-            {
-                    if( save_motor_dir[i] == 0x00)
-                    {
-                            motor_sta &= ~(0x01<<i);
-                    }
-                    else if(save_motor_dir[i] == 0x01)
-                    {
-                            motor_sta |= (0x01<<i);
-                    }
-                    Motor_menu->dir = save_motor_dir[i];
-                    Motor_menu = Motor_menu->next;
-            }
-            Motor_menu = Motor_menu_head;	
+//            int i;
+//            for(i=0;i<4;i++)
+//            {
+//                    if( save_motor_dir[i] == 0x00)
+//                    {
+//                            motor_sta &= ~(0x01<<i);
+//                    }
+//                    else if(save_motor_dir[i] == 0x01)
+//                    {
+//                            motor_sta |= (0x01<<i);
+//                    }
+//                    Motor_menu->dir = save_motor_dir[i];
+//                    Motor_menu = Motor_menu->next;
+//            }
+//            Motor_menu = Motor_menu_head;	
         }
     }
 
@@ -152,7 +153,6 @@ void osd_setting()
                         Menu_pointer->PID_value = 100;
                 }
                 PID_menu = PID_menu_head;
-              //??PID?
                 for(a=0;a<3;a++)
                 {
                         pidkp[a] = PID_menu->PID_value;
@@ -177,68 +177,68 @@ void osd_setting()
                     Menu_pointer = main_menu_head;
                     showcase = 1;
             }
-            if(0 == Menu_pointer->menu_class  && 1 == Menu_pointer->menu_index) 
-            {
-                  Menu_pointer = Motor_menu_head;
-                  showcase = 3;
-            }
-            else if(2 == Menu_pointer->menu_class)
-            {
-              int i;
-                Menu_pointer->dir ++;
-                if(Menu_pointer->dir > 1)
-                {
-                        Menu_pointer->dir = 1;
-                }
-                Motor_menu = Motor_menu_head;
-                for(i=0;i<4;i++)
-                {
-                        if(Motor_menu->dir == 0)
-                        {
-                                motor_sta &= ~(0x01<<i);
-                        }
-                        else
-                        {
-                                motor_sta |= (0x01<<i);
-                        }
-                        Motor_menu = Motor_menu->next;
-                }
-            }
-            
-            if(2 == Menu_pointer->menu_class && 4 == Menu_pointer->menu_index)
-            {
-                int i;
-                showcase = 1;
-                Menu_pointer = main_menu_head;
-                Motor_menu = Motor_menu_head;
-                for(i=0;i<4;i++)
-                {
-                        save_motor_dir[i] = Motor_menu->dir;
-                        Motor_menu = Motor_menu->next;
-                }
-            }
-            
-            
-            if(0 == Menu_pointer->menu_class && 2 == Menu_pointer->menu_index)
-            {
-                showcase =4;
-                Menu_pointer = Receiver_menu_head;
-            }
-            else if(3 == Menu_pointer->menu_class)
-            {
-                if(aux[LEVELMODE])
-                {
-                    if(Menu_pointer->menu_index ==0)
-                    {
-                        aetr_or_taer = !aetr_or_taer;
-                    }
-                    else
-                    {
-                        Menu_pointer = main_menu_head;
-                        showcase =1;
-                    }
-                }
-            }
+//            if(0 == Menu_pointer->menu_class  && 1 == Menu_pointer->menu_index) 
+//            {
+//                  Menu_pointer = Motor_menu_head;
+//                  showcase = 3;
+//            }
+//            else if(2 == Menu_pointer->menu_class)
+//            {
+//              int i;
+//                Menu_pointer->dir ++;
+//                if(Menu_pointer->dir > 1)
+//                {
+//                        Menu_pointer->dir = 1;
+//                }
+//                Motor_menu = Motor_menu_head;
+//                for(i=0;i<4;i++)
+//                {
+//                        if(Motor_menu->dir == 0)
+//                        {
+//                                motor_sta &= ~(0x01<<i);
+//                        }
+//                        else
+//                        {
+//                                motor_sta |= (0x01<<i);
+//                        }
+//                        Motor_menu = Motor_menu->next;
+//                }
+//            }
+//            
+//            if(2 == Menu_pointer->menu_class && 4 == Menu_pointer->menu_index)
+//            {
+//                int i;
+//                showcase = 1;
+//                Menu_pointer = main_menu_head;
+//                Motor_menu = Motor_menu_head;
+//                for(i=0;i<4;i++)
+//                {
+//                        save_motor_dir[i] = Motor_menu->dir;
+//                        Motor_menu = Motor_menu->next;
+//                }
+//            }
+//            
+//            
+//            if(0 == Menu_pointer->menu_class && 2 == Menu_pointer->menu_index)
+//            {
+//                showcase =4;
+//                Menu_pointer = Receiver_menu_head;
+//            }
+//            else if(3 == Menu_pointer->menu_class)
+//            {
+//                if(aux[LEVELMODE])
+//                {
+//                    if(Menu_pointer->menu_index ==0)
+//                    {
+//                        aetr_or_taer = !aetr_or_taer;
+//                    }
+//                    else
+//                    {
+//                        Menu_pointer = main_menu_head;
+//                        showcase =1;
+//                    }
+//                }
+//            }
             if(0 == Menu_pointer->menu_class && 3 == Menu_pointer->menu_index)
             {
                 flash_hard_coded_pid_identifier();					
@@ -266,10 +266,10 @@ void osd_setting()
             right_flag = 0;
 		}
 		
-		if((rx[Roll] < -0.6f) && left_flag == 1)     //?????
+		if((rx[Roll] < -0.6f) && left_flag == 1)
 		{
             int a;
-            if(1 == Menu_pointer->menu_class)       //PID? ??
+            if(1 == Menu_pointer->menu_class)
             {
                 Menu_pointer->PID_value -= 0.01f;
                 if(Menu_pointer->PID_value <= 0)
@@ -277,7 +277,6 @@ void osd_setting()
                     Menu_pointer->PID_value = 0;
                 }
                     PID_menu = PID_menu_head;
-              //??PID?
                 for(a=0;a<3;a++)
                 {
                     pidkp[a] = PID_menu->PID_value;
@@ -297,35 +296,35 @@ void osd_setting()
                 }
             }
             
-            if(2 == Menu_pointer->menu_class)
-            {
-                int z;
-                Menu_pointer->dir --;
-                if((Menu_pointer->dir - 0xf) > 0)
-                {
-                    Menu_pointer->dir = 0;
-                }
-                Motor_menu = Motor_menu_head;
-                for(z=0;z<4;z++)
-                {
-                    if(Motor_menu->dir == 0x00)
-                    {
-                        motor_sta &= (~(0x01<<z));
-                    }
-                    else if(Motor_menu->dir == 0x01)
-                    {
-                        motor_sta |= (0x01<<z);
-                    }
-                    Motor_menu = Motor_menu->next;
-                }
-            }
-            if(3 == Menu_pointer->menu_class)
-            {
-                if(aux[LEVELMODE])
-                {
-                    aetr_or_taer = !aetr_or_taer;
-                }
-            }
+//            if(2 == Menu_pointer->menu_class)
+//            {
+//                int z;
+//                Menu_pointer->dir --;
+//                if((Menu_pointer->dir - 0xf) > 0)
+//                {
+//                    Menu_pointer->dir = 0;
+//                }
+//                Motor_menu = Motor_menu_head;
+//                for(z=0;z<4;z++)
+//                {
+//                    if(Motor_menu->dir == 0x00)
+//                    {
+//                        motor_sta &= (~(0x01<<z));
+//                    }
+//                    else if(Motor_menu->dir == 0x01)
+//                    {
+//                        motor_sta |= (0x01<<z);
+//                    }
+//                    Motor_menu = Motor_menu->next;
+//                }
+//            }
+//            if(3 == Menu_pointer->menu_class)
+//            {
+//                if(aux[LEVELMODE])
+//                {
+//                    aetr_or_taer = !aetr_or_taer;
+//                }
+//            }
             left_flag = 0;
 		}
 		
@@ -340,7 +339,7 @@ void osd_setting()
     OSD_Tx_Data(OSD_DATA,pack_len);
     
 }
-
+#endif
 
 Menu_List CreateDbCcLinkList(char length,char list_class)
 {

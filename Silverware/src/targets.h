@@ -75,7 +75,7 @@
 
 #ifdef Lite_Brushless
 #define BRUSHLESS_TARGET
-//#define Lite_OSD
+#define Lite_OSD
 
 //LEDS
 #define LED_NUMBER 1

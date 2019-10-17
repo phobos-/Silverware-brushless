@@ -117,7 +117,9 @@ float aux_analog[AUXNUMBER];
 float lastaux_analog[AUXNUMBER];
 // if an analog aux channel has just changed
 char aux_analogchange[AUXNUMBER];
-
+extern float pidkp[PIDNUMBER];  
+extern float pidki[PIDNUMBER];	
+extern float pidkd[PIDNUMBER];
 // bind / normal rx mode
 extern int rxmode;
 // failsafe on / off
@@ -160,6 +162,7 @@ int main(void)
 clk_init();
 #endif
 
+
 #if defined(RX_SBUS_DSMX_BAYANG_SWITCH) 
 	switch_key();
     flash_load();
@@ -185,8 +188,7 @@ clk_init();
 		flash_save();
     }
 #endif 
-    
-    
+   
   gpio_init();	
   ledon(255);	
   spi_init();
@@ -194,7 +196,8 @@ clk_init();
   time_init();
     
 #ifdef Lite_OSD
- // osdMenuInit();
+  osdMenuInit();
+  osd_spi_init();
 #endif
     
 #if defined(RX_DSMX_2048) || defined(RX_DSM2_1024)    
@@ -598,10 +601,9 @@ rgb_dma_start();
     
 #ifdef Lite_OSD
     osdcount ++;
-    if(osdcount == 200)
+    if(osdcount == 10)
     {
-        make_vol_pack(OSD_DATA,(int)(vbattfilt*100),0,0,aux,0,0,0,0,0,0,0);
-        OSD_Tx_Data(OSD_DATA,pack_len);
+        osd_setting();
         osdcount = 0;
     }
 

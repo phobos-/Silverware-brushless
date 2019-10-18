@@ -601,16 +601,23 @@ rgb_dma_start();
     
 #ifdef Lite_OSD
     osdcount ++;
-    if(osdcount == 10)
+    if(aux[ARMING])
     {
-        osd_setting();
-        osdcount = 0;
+        if(osdcount == 12)
+        {
+            make_vol_pack(OSD_DATA,(int)(vbattfilt*100),0,rx,aux,0,0,0,0,0,0,0);
+            OSD_Tx_Data(OSD_DATA,pack_len);
+            osdcount = 0;
+        }
     }
-
-#endif
-    if(!aux[ARMING])
+    else
     {
         pwm_count ++;
+        if(osdcount == 2)
+        {
+            osd_setting();
+            osdcount = 0;
+        }
         if(pwm_count ==30)
          {
             if (aux[LEVELMODE])
@@ -651,6 +658,7 @@ rgb_dma_start();
             pwm_count = 0;
         }
     }
+#endif
     while ( (gettime() - time) < LOOPTIME );	
 
 		

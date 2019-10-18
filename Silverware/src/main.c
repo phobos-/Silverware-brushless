@@ -475,6 +475,11 @@ if( thrfilt > 0.1f )
 
     vbatt_comp = tempvolt + (float) VDROP_FACTOR * thrfilt; 	
 
+if ( onground )
+{
+ gestures( );
+}
+
 
 if ( LED_NUMBER > 0)
 {

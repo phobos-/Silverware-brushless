@@ -56,8 +56,8 @@ float stickAcceleratorProfileA[3] = { 0.0 , 0.0 , 0.0};           //keep values 
 float stickTransitionProfileA[3]  = { 0.0 , 0.0 , 0.0};           //keep values between -1 and 1
 
 //pid profile B						 Roll  PITCH  YAW
-float stickAcceleratorProfileB[3] = { 1.5 , 1.5 , 1.0};           //keep values between 0 and 2.5
-float stickTransitionProfileB[3]  = { 0.3 , 0.3 , 0.0};           //keep values between -1 and 1
+float stickAcceleratorProfileB[3] = { 0.8 , 0.8 , 0.8};           //keep values between 0 and 2.5
+float stickTransitionProfileB[3]  = { 0.0 , 0.0 , 0.0};           //keep values between -1 and 1
 
 
 

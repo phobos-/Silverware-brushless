@@ -13,7 +13,7 @@
 
 #define Lite_Brushless
 //#define Lite_Frsky  
-#define RX_Default 2 //1:BAYANG;  2:SBUS;  3:DSMX
+#define RX_Default 1 //1:BAYANG;  2:SBUS;  3:DSMX
 
 
 
@@ -22,8 +22,8 @@
 //***********************************************RATES & EXPO SETTINGS**************************************************
 
 // *************Select your preffered rate calculation format (define only one)
-#define SILVERWARE_RATES
-//#define BETAFLIGHT_RATES
+//#define SILVERWARE_RATES
+#define BETAFLIGHT_RATES
 
 #ifdef SILVERWARE_RATES
 // *************rate in deg/sec
@@ -43,9 +43,9 @@
 #endif
 
 #ifdef BETAFLIGHT_RATES
-#define BF_RC_RATE_ROLL 1.00
-#define BF_RC_RATE_PITCH 1.00
-#define BF_RC_RATE_YAW 1.00
+#define BF_RC_RATE_ROLL 0.80
+#define BF_RC_RATE_PITCH 0.80
+#define BF_RC_RATE_YAW 0.80
 #define BF_SUPER_RATE_ROLL 0.70
 #define BF_SUPER_RATE_PITCH 0.70
 #define BF_SUPER_RATE_YAW 0.70
@@ -79,15 +79,15 @@
 //#define RX_CRSF                                           //Requires tbs firmware v2.88 or newer for failsafe to operate properly
 //#define RX_DSMX_2048
 //#define RX_DSM2_1024
-#define RX_SBUS_DSMX_BAYANG_SWITCH
+//#define RX_SBUS_DSMX_BAYANG_SWITCH
 //#define RX_NRF24_BAYANG_TELEMETRY
 //#define RX_BAYANG_PROTOCOL_BLE_BEACON
-//#define RX_BAYANG_PROTOCOL_TELEMETRY_AUTOBIND
+#define RX_BAYANG_PROTOCOL_TELEMETRY_AUTOBIND
 
 // *************Transmitter Type Selection
 //#define USE_STOCK_TX
-//#define USE_DEVO
-#define USE_MULTI
+#define USE_DEVO
+//#define USE_MULTI
 
 // *******************************SWITCH SELECTION*****************************
 // *************CHAN_ON - on always ( all protocols)
@@ -216,8 +216,8 @@
 #ifdef BETA_FILTERING  //*** ABOVE 100 ADJUST IN INCRIMENTS OF 20, BELOW 100 ADJUST IN INCRIMENTS OF 10, nothing coded beyond 500hz
 
 //Select Gyro Filter Type *** Select Only One type
-#define KALMAN_GYRO
-//#define PT1_GYRO
+//#define KALMAN_GYRO
+#define PT1_GYRO
 
 //Select Gyro Filter Cut Frequency
 #define GYRO_FILTER_PASS1 HZ_90

@@ -612,12 +612,17 @@ rgb_dma_start();
     }
     else
     {
-        pwm_count ++;
+        
         if(osdcount == 2)
         {
             osd_setting();
             osdcount = 0;
         }
+    }
+#endif
+    if(!aux[ARMING])
+    {
+        pwm_count ++;
         if(pwm_count ==30)
          {
             if (aux[LEVELMODE])
@@ -658,7 +663,7 @@ rgb_dma_start();
             pwm_count = 0;
         }
     }
-#endif
+
     while ( (gettime() - time) < LOOPTIME );	
 
 		

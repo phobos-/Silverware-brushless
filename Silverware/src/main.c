@@ -601,6 +601,7 @@ rgb_dma_start();
     
 #ifdef Lite_OSD
     osdcount ++;
+    
     if(aux[ARMING])
     {
         if(osdcount == 12)
@@ -612,18 +613,14 @@ rgb_dma_start();
     }
     else
     {
-        
-        if(osdcount == 2)
+        if(osdcount >= 2)
         {
             osd_setting();
             osdcount = 0;
         }
-    }
-#endif
-    if(!aux[ARMING])
-    {
         pwm_count ++;
-        if(pwm_count ==30)
+        
+        if(pwm_count ==100)
          {
             if (aux[LEVELMODE])
             {
@@ -663,6 +660,7 @@ rgb_dma_start();
             pwm_count = 0;
         }
     }
+#endif
 
     while ( (gettime() - time) < LOOPTIME );	
 

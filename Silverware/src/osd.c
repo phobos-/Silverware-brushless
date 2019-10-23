@@ -70,7 +70,7 @@ void osdMenuInit(void)
 	Menu_pointer = main_menu;    
 }
 
-#if 1
+
 void osd_setting()
 {
     if(!showcase)
@@ -341,7 +341,7 @@ void osd_setting()
     OSD_Tx_Data(OSD_DATA,pack_len);
     
 }
-#endif
+
 
 Menu_List CreateDbCcLinkList(char length,char list_class)
 {
